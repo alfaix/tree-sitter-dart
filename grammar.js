@@ -1806,16 +1806,15 @@ module.exports = grammar({
         enum_declaration: $ => seq(
             optional($._metadata),
             'enum',
-            field('name', $.identifier),
-            optional($.type_parameters),
+            $._class_name_maybe_primary,
             optional($.mixins),
             optional($.interfaces),
-            field('body', $.enum_body),
+            field('body', choice($.enum_body, $._semicolon)),
         ),
 
         enum_body: $ => seq(
             '{',
-            commaSep1TrailingComma($.enum_constant),
+            optional(commaSep1TrailingComma($.enum_constant)),
             optional(
                 seq(';', repeat(choice(
                     seq(optional($._metadata), $._class_member_definition),
@@ -1863,11 +1862,10 @@ module.exports = grammar({
             seq(
                 optional($._metadata),
                 choice($._class_modifiers, $._mixin_class_modifiers),
-                field('name', $.identifier),
-                optional(field('type_parameters', $.type_parameters)),
+                $._class_name_maybe_primary,
                 optional(field('superclass', $.superclass)),
                 optional(field('interfaces', $.interfaces)),
-                field('body', $.class_body)
+                field('body', choice($.class_body, $._semicolon))
             ),
             seq(
                 optional($._metadata),
@@ -1884,7 +1882,7 @@ module.exports = grammar({
                 optional(field('type_parameters', $.type_parameters)),
                 'on',
                 field('class', $._type),
-                field('body', $.extension_body)
+                field('body', choice($.extension_body, $._semicolon))
             ),
         ),
 
@@ -1897,16 +1895,43 @@ module.exports = grammar({
             optional(field('type_parameters', $.type_parameters)),
             field('representation', $.representation_declaration),
             optional(field('interfaces', $.interfaces)),
-            field('body', $.class_body)
+            field('body', choice($.class_body, $._semicolon))
         ),
 
         representation_declaration: $ => seq(
             optional(seq('.', choice($.identifier, $._new_builtin))),
             '(',
             optional($._metadata),
+            optional($.final_builtin),
             field('type', $._type),
             field('name', $.identifier),
+            optional(','),
             ')'
+        ),
+
+        // `const` is only allowed together with a primary constructor.
+        _class_name_maybe_primary: $ => choice(
+            seq(
+                $.const_builtin,
+                field('name', $.identifier),
+                optional(field('type_parameters', $.type_parameters)),
+                field('primary_constructor', $.primary_constructor),
+            ),
+            seq(
+                field('name', $.identifier),
+                optional(field('type_parameters', $.type_parameters)),
+                optional(field('primary_constructor', $.primary_constructor)),
+            ),
+        ),
+
+        primary_constructor: $ => seq(
+            optional(seq('.', field('name', $._identifier_or_new))),
+            field('parameters', $.formal_parameter_list)
+        ),
+
+        primary_constructor_body_signature: $ => seq(
+            $.this,
+            optional($.initializers)
         ),
 
         _metadata: $ => prec.right(repeat1($.annotation)),
@@ -1973,7 +1998,7 @@ module.exports = grammar({
                 $._type_not_void_list
             )),
             optional($.interfaces),
-            $.class_body
+            choice($.class_body, $._semicolon)
         ),
         interfaces: $ => seq(
             $._implements,
@@ -2114,6 +2139,7 @@ module.exports = grammar({
         method_signature: $ => choice(
             seq($.constructor_signature, optional($.initializers)),
             $.factory_constructor_signature,
+            $.primary_constructor_body_signature,
 
             seq(
                 optional($._static),
@@ -2127,6 +2153,7 @@ module.exports = grammar({
         ),
 
         declaration: $ => choice(
+            $.primary_constructor_body_signature,
             seq($.constant_constructor_signature, optional(choice($.redirection, $.initializers))),
             seq($.constructor_signature, optional(choice($.redirection, $.initializers))),
             seq($._external,
@@ -2397,14 +2424,14 @@ module.exports = grammar({
 
         factory_constructor_signature: $ => seq(
             $._factory,
-            sep1($.identifier, '.'),
+            optional(sep1($.identifier, '.')),
             $.formal_parameter_list,
         ),
 
         redirecting_factory_constructor_signature: $ => seq(
             optional($.const_builtin),
             $._factory,
-            sep1($.identifier, '.'),
+            optional(sep1($.identifier, '.')),
             $.formal_parameter_list,
             '=',
             $._type_not_void,
@@ -2422,17 +2449,23 @@ module.exports = grammar({
         ),
 
         constructor_signature: $ => seq(
-            field('name', seq($.identifier, optional(
-                seq(
-                    '.',
-                    $._identifier_or_new
-                )
-            ))),
+            choice(
+                field('name', seq($.identifier, optional(
+                    seq(
+                        '.',
+                        $._identifier_or_new
+                    )
+                ))),
+                seq($._new_builtin, optional(field('name', $.identifier))),
+            ),
             field('parameters', $.formal_parameter_list)
         ),
         constant_constructor_signature: $ => seq(
             $.const_builtin,
-            seq($.identifier, optional(seq('.', $._identifier_or_new))),
+            choice(
+                seq($.identifier, optional(seq('.', $._identifier_or_new))),
+                seq($._new_builtin, optional($.identifier)),
+            ),
             $.formal_parameter_list
         ),
 

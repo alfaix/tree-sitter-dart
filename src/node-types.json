@@ -2143,6 +2143,10 @@
         "required": false,
         "types": [
           {
+            "type": ";",
+            "named": false
+          },
+          {
             "type": "class_body",
             "named": true
           }
@@ -2164,6 +2168,16 @@
         "types": [
           {
             "type": "identifier",
+            "named": true
+          }
+        ]
+      },
+      "primary_constructor": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "primary_constructor",
             "named": true
           }
         ]
@@ -2203,6 +2217,10 @@
         },
         {
           "type": "base",
+          "named": true
+        },
+        {
+          "type": "const_builtin",
           "named": true
         },
         {
@@ -3054,7 +3072,7 @@
     "fields": {
       "name": {
         "multiple": true,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": ".",
@@ -3189,6 +3207,10 @@
           "named": true
         },
         {
+          "type": "primary_constructor_body_signature",
+          "named": true
+        },
+        {
           "type": "record_type",
           "named": true
         },
@@ -3300,7 +3322,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "annotation",
@@ -3376,6 +3398,10 @@
         "required": true,
         "types": [
           {
+            "type": ";",
+            "named": false
+          },
+          {
             "type": "enum_body",
             "named": true
           }
@@ -3390,6 +3416,26 @@
             "named": true
           }
         ]
+      },
+      "primary_constructor": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "primary_constructor",
+            "named": true
+          }
+        ]
+      },
+      "type_parameters": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "type_parameters",
+            "named": true
+          }
+        ]
       }
     },
     "children": {
@@ -3401,15 +3447,15 @@
           "named": true
         },
         {
+          "type": "const_builtin",
+          "named": true
+        },
+        {
           "type": "interfaces",
           "named": true
         },
         {
           "type": "mixins",
-          "named": true
-        },
-        {
-          "type": "type_parameters",
           "named": true
         }
       ]
@@ -3734,6 +3780,10 @@
         "required": true,
         "types": [
           {
+            "type": ";",
+            "named": false
+          },
+          {
             "type": "extension_body",
             "named": true
           }
@@ -3817,6 +3867,10 @@
         "multiple": false,
         "required": true,
         "types": [
+          {
+            "type": ";",
+            "named": false
+          },
           {
             "type": "class_body",
             "named": true
@@ -8354,6 +8408,10 @@
           "named": true
         },
         {
+          "type": "primary_constructor_body_signature",
+          "named": true
+        },
+        {
           "type": "setter_signature",
           "named": true
         }
@@ -10688,6 +10746,55 @@
     }
   },
   {
+    "type": "primary_constructor",
+    "named": true,
+    "fields": {
+      "name": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "identifier",
+            "named": true
+          },
+          {
+            "type": "new",
+            "named": false
+          }
+        ]
+      },
+      "parameters": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "formal_parameter_list",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "primary_constructor_body_signature",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "initializers",
+          "named": true
+        },
+        {
+          "type": "this",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "program",
     "named": true,
     "root": true,
@@ -11697,6 +11804,10 @@
       "types": [
         {
           "type": "annotation",
+          "named": true
+        },
+        {
+          "type": "final_builtin",
           "named": true
         },
         {

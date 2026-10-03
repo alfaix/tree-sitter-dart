@@ -1,0 +1,361 @@
+=====================================
+Primary constructor with named params
+=====================================
+class SearchResult({required final String title, required final String url});
+
+---
+
+(program
+  (class_definition
+    (identifier)
+    (primary_constructor
+      (formal_parameter_list
+        (optional_formal_parameters
+          (formal_parameter
+            (final_builtin)
+            (type_identifier)
+            (identifier))
+          (formal_parameter
+            (final_builtin)
+            (type_identifier)
+            (identifier)))))))
+
+==========================================
+Primary constructor with positional params
+==========================================
+class SearchResults(
+  final List<SearchResult> results, {
+  final String? searchTerm,
+}) {}
+
+---
+
+(program
+  (class_definition
+    (identifier)
+    (primary_constructor
+      (formal_parameter_list
+        (formal_parameter
+          (final_builtin)
+          (type_identifier)
+          (type_arguments
+            (type_identifier))
+          (identifier))
+        (optional_formal_parameters
+          (formal_parameter
+            (final_builtin)
+            (type_identifier)
+            (nullable_type)
+            (identifier)))))
+    (class_body)))
+
+===============================
+Const named primary constructor
+===============================
+class const Point._(var int x, final int y);
+class Wrapper<T>.new(final T value);
+
+---
+
+(program
+  (class_definition
+    (const_builtin)
+    (identifier)
+    (primary_constructor
+      (identifier)
+      (formal_parameter_list
+        (formal_parameter
+          (inferred_type)
+          (type_identifier)
+          (identifier))
+        (formal_parameter
+          (final_builtin)
+          (type_identifier)
+          (identifier)))))
+  (class_definition
+    (identifier)
+    (type_parameters
+      (type_parameter
+        (type_identifier)))
+    (primary_constructor
+      (formal_parameter_list
+        (formal_parameter
+          (final_builtin)
+          (type_identifier)
+          (identifier))))))
+
+=========================================
+Primary constructor with supertype clauses
+=========================================
+class DatabaseIOError(final String message) extends DatabaseIOResult;
+final class Foo(int a, [final int b = 0]) extends Bar with Baz implements Qux {}
+
+---
+
+(program
+  (class_definition
+    (identifier)
+    (primary_constructor
+      (formal_parameter_list
+        (formal_parameter
+          (final_builtin)
+          (type_identifier)
+          (identifier))))
+    (superclass
+      (type_identifier)))
+  (class_definition
+    (identifier)
+    (primary_constructor
+      (formal_parameter_list
+        (formal_parameter
+          (type_identifier)
+          (identifier))
+        (optional_formal_parameters
+          (formal_parameter
+            (final_builtin)
+            (type_identifier)
+            (identifier))
+          (decimal_integer_literal))))
+    (superclass
+      (type_identifier)
+      (mixins
+        (type_identifier)))
+    (interfaces
+      (type_identifier))
+    (class_body)))
+
+================================
+Primary constructor body with this
+================================
+class Point(var int x, var int y) {
+  this : assert(0 <= x && x <= y * y);
+  int sum() => x + y;
+}
+
+class Logged(final int x) {
+  this {
+    print(x);
+  }
+}
+
+---
+
+(program
+  (class_definition
+    (identifier)
+    (primary_constructor
+      (formal_parameter_list
+        (formal_parameter
+          (inferred_type)
+          (type_identifier)
+          (identifier))
+        (formal_parameter
+          (inferred_type)
+          (type_identifier)
+          (identifier))))
+    (class_body
+      (declaration
+        (primary_constructor_body_signature
+          (this)
+          (initializers
+            (initializer_list_entry
+              (assertion
+                (assert_builtin)
+                (assertion_arguments
+                  (logical_and_expression
+                    (relational_expression
+                      (decimal_integer_literal)
+                      (relational_operator)
+                      (identifier))
+                    (logical_and_operator)
+                    (relational_expression
+                      (identifier)
+                      (relational_operator)
+                      (multiplicative_expression
+                        (identifier)
+                        (multiplicative_operator)
+                        (identifier))))))))))
+      (method_signature
+        (function_signature
+          (type_identifier)
+          (identifier)
+          (formal_parameter_list)))
+      (function_body
+        (additive_expression
+          (identifier)
+          (additive_operator)
+          (identifier)))))
+  (class_definition
+    (identifier)
+    (primary_constructor
+      (formal_parameter_list
+        (formal_parameter
+          (final_builtin)
+          (type_identifier)
+          (identifier))))
+    (class_body
+      (method_signature
+        (primary_constructor_body_signature
+          (this)))
+      (function_body
+        (block
+          (expression_statement
+            (identifier)
+            (selector
+              (argument_part
+                (arguments
+                  (argument
+                    (identifier)))))))))))
+
+=====================
+Empty declaration body
+=====================
+class Empty;
+mixin M;
+extension E on int;
+extension type const Id(final int value);
+enum Unit;
+
+---
+
+(program
+  (class_definition
+    (identifier))
+  (mixin_declaration
+    (mixin)
+    (identifier))
+  (extension_declaration
+    (identifier)
+    (type_identifier))
+  (extension_type_declaration
+    (const_builtin)
+    (identifier)
+    (representation_declaration
+      (final_builtin)
+      (type_identifier)
+      (identifier)))
+  (enum_declaration
+    (identifier)))
+
+============================
+Enum with primary constructor
+============================
+enum Color(final int rgb) {
+  red(0xff0000),
+  green(0x00ff00);
+
+  bool get isRed => this == red;
+}
+
+---
+
+(program
+  (enum_declaration
+    (identifier)
+    (primary_constructor
+      (formal_parameter_list
+        (formal_parameter
+          (final_builtin)
+          (type_identifier)
+          (identifier))))
+    (enum_body
+      (enum_constant
+        (identifier)
+        (argument_part
+          (arguments
+            (argument
+              (hex_integer_literal)))))
+      (enum_constant
+        (identifier)
+        (argument_part
+          (arguments
+            (argument
+              (hex_integer_literal)))))
+      (method_signature
+        (getter_signature
+          (type_identifier)
+          (identifier)))
+      (function_body
+        (equality_expression
+          (this)
+          (equality_operator)
+          (identifier))))))
+
+=====================================
+Abbreviated constructor declarations
+=====================================
+class A {
+  new (this.x);
+  new named() : x = 0;
+  const new zero() : x = 0;
+  factory () => A(1);
+  factory create() => A(2);
+  const factory redirect() = A;
+  final int x;
+}
+
+---
+
+(program
+  (class_definition
+    (identifier)
+    (class_body
+      (declaration
+        (constructor_signature
+          (formal_parameter_list
+            (formal_parameter
+              (constructor_param
+                (this)
+                (identifier))))))
+      (declaration
+        (constructor_signature
+          (identifier)
+          (formal_parameter_list))
+        (initializers
+          (initializer_list_entry
+            (field_initializer
+              (identifier)
+              (decimal_integer_literal)))))
+      (declaration
+        (constant_constructor_signature
+          (const_builtin)
+          (identifier)
+          (formal_parameter_list))
+        (initializers
+          (initializer_list_entry
+            (field_initializer
+              (identifier)
+              (decimal_integer_literal)))))
+      (method_signature
+        (factory_constructor_signature
+          (formal_parameter_list)))
+      (function_body
+        (identifier)
+        (selector
+          (argument_part
+            (arguments
+              (argument
+                (decimal_integer_literal))))))
+      (method_signature
+        (factory_constructor_signature
+          (identifier)
+          (formal_parameter_list)))
+      (function_body
+        (identifier)
+        (selector
+          (argument_part
+            (arguments
+              (argument
+                (decimal_integer_literal))))))
+      (declaration
+        (redirecting_factory_constructor_signature
+          (const_builtin)
+          (identifier)
+          (formal_parameter_list)
+          (type_identifier)))
+      (declaration
+        (final_builtin)
+        (type_identifier)
+        (initialized_identifier_list
+          (initialized_identifier
+            (identifier)))))))
