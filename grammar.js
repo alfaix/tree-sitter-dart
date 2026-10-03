@@ -1901,12 +1901,20 @@ module.exports = grammar({
         representation_declaration: $ => seq(
             optional(seq('.', choice($.identifier, $._new_builtin))),
             '(',
-            optional($._metadata),
-            optional($.final_builtin),
-            field('type', $._type),
-            field('name', $.identifier),
-            optional(','),
+            choice(
+                $._representation_parameter,
+                seq('[', $._representation_parameter, ']'),
+                seq('{', $._representation_parameter, '}'),
+            ),
             ')'
+        ),
+
+        _representation_parameter: $ => seq(
+            repeat(choice($.annotation, $._required, $.final_builtin)),
+            optional(field('type', $._type)),
+            field('name', $.identifier),
+            optional(seq('=', $._expression)),
+            optional(','),
         ),
 
         // `const` is only allowed together with a primary constructor.

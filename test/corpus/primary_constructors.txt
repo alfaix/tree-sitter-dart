@@ -237,6 +237,45 @@ enum Unit;
   (enum_declaration
     (identifier)))
 
+============================================
+Extension type primary constructor parameter
+============================================
+extension type ET3(i);
+extension type ET4(final i);
+extension type ET5({required int i});
+extension type ET6({int i = 0});
+extension type ET8([int? i]);
+
+---
+
+(program
+  (extension_type_declaration
+    (identifier)
+    (representation_declaration
+      (identifier)))
+  (extension_type_declaration
+    (identifier)
+    (representation_declaration
+      (final_builtin)
+      (identifier)))
+  (extension_type_declaration
+    (identifier)
+    (representation_declaration
+      (type_identifier)
+      (identifier)))
+  (extension_type_declaration
+    (identifier)
+    (representation_declaration
+      (type_identifier)
+      (identifier)
+      (decimal_integer_literal)))
+  (extension_type_declaration
+    (identifier)
+    (representation_declaration
+      (type_identifier)
+      (nullable_type)
+      (identifier))))
+
 ============================
 Enum with primary constructor
 ============================
